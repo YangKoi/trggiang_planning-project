@@ -1,0 +1,304 @@
+.gantt-view {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+/* Gantt Legend */
+.gantt-legend {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.legend-bar {
+  width: 32px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.legend-bar.plan-color {
+  background: linear-gradient(90deg, #d97706, #f59e0b);
+}
+
+.legend-bar.actual-color {
+  background: linear-gradient(90deg, #10b981, #8b5cf6);
+}
+
+.legend-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.info-icon {
+  color: var(--color-primary);
+}
+
+/* Scrollable Container Wrapper */
+.gantt-wrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 32px;
+  background: var(--glass-bg);
+}
+
+.gantt-container-scrollable {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  position: relative;
+  min-height: 400px;
+}
+
+/* Left Sidebar (Task Names) */
+.gantt-sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+.sidebar-header-cell {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sidebar-task-cell {
+  height: 80px; /* Crucial: Matches row height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
+  gap: 6px;
+}
+
+.sidebar-task-cell:hover {
+  background-color: var(--bg-card-hover);
+}
+
+.task-row-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dependency-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--color-primary);
+  padding: 1px 5px;
+  border-radius: 4px;
+  align-self: flex-start;
+  text-transform: uppercase;
+}
+
+/* Right Timeline Area */
+.gantt-timeline-area {
+  flex: 1;
+  min-width: 1000px; /* Ensures minimum width for scrolling timeline grid */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.timeline-months-row {
+  height: 50px;
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.timeline-month-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border-color);
+  height: 100%;
+}
+
+/* Rows Container & Grid Lines */
+.timeline-rows-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.month-lines-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.month-vertical-line {
+  border-right: 1px dashed var(--border-color);
+  height: 100%;
+  opacity: 0.5;
+}
+
+/* Assessment Line */
+.assessment-vertical-line {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, #d946ef, #8b5cf6);
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
+.assessment-label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #8b5cf6;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+/* SVG dependencies */
+.dependencies-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Task Rows */
+.timeline-task-row {
+  height: 80px; /* Match sidebar-task-cell */
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+/* Bars styling */
+.gantt-bar {
+  position: absolute;
+  height: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gantt-bar:hover {
+  transform: scaleY(1.1);
+  box-shadow: var(--shadow-md);
+  z-index: 4;
+}
+
+.gantt-bar.plan-bar {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  top: 16px; /* Plan is top bar */
+}
+
+.gantt-bar.actual-bar {
+  top: 42px; /* Actual is bottom bar */
+  height: 22px;
+}
+
+.gantt-bar.actual-bar.finished {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.gantt-bar.actual-bar.in-progress {
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+}
+
+/* Date Text Labels on hover or subtle display */
+.bar-date-label {
+  position: absolute;
+  font-size: 8px;
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.75);
+  color: white;
+  padding: 1px 4px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.bar-date-label.start {
+  left: 0;
+  transform: translateY(-20px);
+}
+
+.bar-date-label.end {
+  right: 0;
+  transform: translateY(-20px);
+}
+
+.gantt-bar:hover .bar-date-label {
+  opacity: 1;
+}
+
+.bar-progress-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}

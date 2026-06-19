@@ -1,0 +1,37 @@
+.main-content-wrapper {
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--bg-app);
+  transition: var(--theme-transition);
+}
+
+/* Header standard inside views */
+.view-header {
+  margin-bottom: 24px;
+}
+
+.view-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.view-subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .main-content-wrapper {
+    height: calc(100vh - 80px);
+  }
+}
