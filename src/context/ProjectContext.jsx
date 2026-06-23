@@ -238,7 +238,16 @@ export const ProjectProvider = ({ children }) => {
     const saved = localStorage.getItem('nexus_google_profile');
     return saved ? JSON.parse(saved) : null;
   });
+  const [googleClientId, setGoogleClientIdState] = useState(() => {
+    return localStorage.getItem('nexus_google_client_id') || '86835265538-t3l66r7g977t9f0siv6d00f7o8rve79k.apps.googleusercontent.com';
+  });
   const [syncState, setSyncState] = useState('idle');
+
+  const saveGoogleClientId = (id) => {
+    const trimmed = id.trim();
+    setGoogleClientIdState(trimmed);
+    localStorage.setItem('nexus_google_client_id', trimmed);
+  };
   const [conflictData, setConflictData] = useState(null);
   const [lastSyncTime, setLastSyncTime] = useState(() => {
     return localStorage.getItem('nexus_last_sync_time') || '';
@@ -284,9 +293,13 @@ export const ProjectProvider = ({ children }) => {
   }, [projects, tasks, members, activities]);
 
   const handleGoogleLogin = () => {
+    if (!googleClientId) {
+      alert('Vui lòng nhập Google Client ID trước khi kết nối.');
+      return;
+    }
     if (window.google) {
       const client = window.google.accounts.oauth2.initTokenClient({
-        client_id: '86835265538-t3l66r7g977t9f0siv6d00f7o8rve79k.apps.googleusercontent.com',
+        client_id: googleClientId,
         scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
         callback: async (tokenResponse) => {
           if (tokenResponse && tokenResponse.access_token) {
@@ -698,6 +711,8 @@ export const ProjectProvider = ({ children }) => {
       importData,
       googleToken,
       googleProfile,
+      googleClientId,
+      saveGoogleClientId,
       syncState,
       lastSyncTime,
       conflictData,

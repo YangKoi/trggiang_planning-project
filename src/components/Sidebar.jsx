@@ -15,7 +15,8 @@ import {
   FolderGit2,
   Trash2,
   RefreshCw,
-  LogOut
+  LogOut,
+  Settings
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -35,6 +36,8 @@ const Sidebar = () => {
     importData,
     googleToken,
     googleProfile,
+    googleClientId,
+    saveGoogleClientId,
     syncState,
     lastSyncTime,
     handleGoogleLogin,
@@ -46,6 +49,8 @@ const Sidebar = () => {
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
   const [newProjectLeadId, setNewProjectLeadId] = useState('');
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [clientIdInput, setClientIdInput] = useState(googleClientId);
 
   const handleCreateProject = (e) => {
     e.preventDefault();
@@ -228,6 +233,46 @@ const Sidebar = () => {
 
       {/* Google Drive Sync Controls */}
       <div className="drive-sync-section">
+        <div className="drive-sync-header">
+          <span className="section-title">Đồng bộ đám mây</span>
+          <button 
+            className={`drive-settings-toggle-btn clickable ${settingsOpen ? 'active' : ''}`}
+            onClick={() => setSettingsOpen(!settingsOpen)}
+            title="Cấu hình Google Client ID"
+          >
+            <Settings size={14} />
+          </button>
+        </div>
+
+        {settingsOpen && (
+          <form className="drive-settings-form glass-panel" onSubmit={(e) => {
+            e.preventDefault();
+            saveGoogleClientId(clientIdInput);
+            setSettingsOpen(false);
+            alert('Đã lưu cấu hình Google Client ID!');
+          }}>
+            <span className="drive-settings-label">Google OAuth Client ID:</span>
+            <input 
+              type="text"
+              className="drive-settings-input"
+              placeholder="Nhập Client ID..."
+              value={clientIdInput}
+              onChange={(e) => setClientIdInput(e.target.value)}
+              required
+            />
+            <div className="drive-settings-help">
+              * Lưu ý: Hãy đảm bảo Client ID đã đăng ký domain <code>{window.location.origin}</code> trong mục <strong>Authorized JavaScript Origins</strong> của Google Cloud Console.
+            </div>
+            <div className="form-actions">
+              <button type="submit" className="submit-btn clickable">Lưu</button>
+              <button type="button" className="cancel-btn clickable" onClick={() => {
+                setClientIdInput(googleClientId);
+                setSettingsOpen(false);
+              }}>Hủy</button>
+            </div>
+          </form>
+        )}
+
         {!googleToken ? (
           <button className="drive-connect-btn clickable" onClick={handleGoogleLogin}>
             <svg className="google-icon" viewBox="0 0 24 24" width="16" height="16">

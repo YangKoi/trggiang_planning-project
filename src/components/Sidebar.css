@@ -347,6 +347,82 @@
   margin-bottom: 12px;
 }
 
+.drive-sync-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.drive-sync-header .section-title {
+  margin-bottom: 0;
+}
+
+.drive-settings-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.drive-settings-toggle-btn:hover,
+.drive-settings-toggle-btn.active {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+}
+
+.drive-settings-form {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.drive-settings-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.drive-settings-input {
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  background: var(--bg-input);
+  color: var(--text-main);
+  outline: none;
+}
+
+.drive-settings-input:focus {
+  border-color: var(--color-primary);
+}
+
+.drive-settings-help {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.drive-settings-help code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+
 .drive-connect-btn {
   width: 100%;
   padding: 10px 14px;
