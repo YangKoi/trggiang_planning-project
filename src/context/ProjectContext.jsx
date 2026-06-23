@@ -162,7 +162,10 @@ export const ProjectProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : initialTasks;
   });
 
-  const [members] = useState(initialMembers);
+  const [members, setMembers] = useState(() => {
+    const saved = localStorage.getItem('nexus_members');
+    return saved ? JSON.parse(saved) : initialMembers;
+  });
 
   const [activities, setActivities] = useState(() => {
     const saved = localStorage.getItem('nexus_activities');
@@ -188,6 +191,10 @@ export const ProjectProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('nexus_tasks', JSON.stringify(tasks));
   }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem('nexus_members', JSON.stringify(members));
+  }, [members]);
 
   useEffect(() => {
     localStorage.setItem('nexus_activities', JSON.stringify(activities));
@@ -229,6 +236,48 @@ export const ProjectProvider = ({ children }) => {
     setProjects(prev => [...prev, newProj]);
     setActiveProjectId(newProj.id);
     logActivity('đã tạo dự án mới', name);
+  };
+
+  const deleteProject = (projId) => {
+    if (projects.length <= 1) {
+      alert('Không thể xóa dự án duy nhất còn lại!');
+      return;
+    }
+    const projToDelete = projects.find(p => p.id === projId);
+    if (projToDelete) {
+      if (window.confirm(`Bạn có chắc chắn muốn xóa dự án "${projToDelete.name}" và tất cả công việc liên quan?`)) {
+        setProjects(prev => prev.filter(p => p.id !== projId));
+        setTasks(prev => prev.map(t => t.projectId === projId ? null : t).filter(Boolean)); // Delete task associated
+        logActivity('đã xóa dự án', projToDelete.name);
+        
+        // Switch active project
+        const remaining = projects.filter(p => p.id !== projId);
+        setActiveProjectId(remaining[0].id);
+      }
+    }
+  };
+
+  const addMember = (name, role, color) => {
+    const newMember = {
+      id: 'm_' + Date.now(),
+      name,
+      role: role || 'Team Member',
+      avatar: name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
+      color: color || '#' + Math.floor(Math.random()*16777215).toString(16)
+    };
+    setMembers(prev => [...prev, newMember]);
+    logActivity('đã thêm thành viên mới', name);
+  };
+
+  const deleteMember = (memberId) => {
+    const memberToDelete = members.find(m => m.id === memberId);
+    if (memberToDelete) {
+      if (window.confirm(`Bạn có chắc chắn muốn xóa thành viên "${memberToDelete.name}"? Các công việc được giao cho thành viên này sẽ trở thành chưa phân công.`)) {
+        setMembers(prev => prev.filter(m => m.id !== memberId));
+        setTasks(prev => prev.map(t => t.assigneeId === memberId ? { ...t, assigneeId: '' } : t));
+        logActivity('đã xóa thành viên', memberToDelete.name);
+      }
+    }
   };
 
   const addTask = (taskData) => {
@@ -289,7 +338,7 @@ export const ProjectProvider = ({ children }) => {
   };
 
   const exportData = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ projects, tasks, activities }));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ projects, tasks, activities, members }));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute("download", `nexus_pm_export_${activeProjectId}.json`);
@@ -304,6 +353,7 @@ export const ProjectProvider = ({ children }) => {
       if (data.projects && data.tasks) {
         setProjects(data.projects);
         setTasks(data.tasks);
+        if (data.members) setMembers(data.members);
         if (data.activities) setActivities(data.activities);
         if (data.projects.length > 0) setActiveProjectId(data.projects[0].id);
         alert('Nhập dữ liệu thành công!');
@@ -318,7 +368,7 @@ export const ProjectProvider = ({ children }) => {
   return (
     <ProjectContext.Provider value={{
       projects,
-      tasks: tasks.filter(t => t.projectId === activeProjectId),
+      tasks: tasks.filter(t => t && t.projectId === activeProjectId),
       allTasks: tasks, // To check cross-project dependencies if needed
       members,
       activities,
@@ -329,6 +379,9 @@ export const ProjectProvider = ({ children }) => {
       theme,
       setTheme,
       addProject,
+      deleteProject,
+      addMember,
+      deleteMember,
       addTask,
       updateTask,
       deleteTask,

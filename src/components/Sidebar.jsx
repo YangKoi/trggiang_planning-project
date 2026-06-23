@@ -11,7 +11,8 @@ import {
   Download, 
   Upload, 
   Plus, 
-  FolderGit2
+  FolderGit2,
+  Trash2
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -26,6 +27,7 @@ const Sidebar = () => {
     theme,
     setTheme,
     addProject,
+    deleteProject,
     exportData,
     importData
   } = useContext(ProjectContext);
@@ -59,7 +61,8 @@ const Sidebar = () => {
     { id: 'dashboard', label: 'Tổng quan', icon: <LayoutDashboard size={18} /> },
     { id: 'kanban', label: 'Bảng Kanban', icon: <KanbanSquare size={18} /> },
     { id: 'list', label: 'Danh sách', icon: <ListTodo size={18} /> },
-    { id: 'gantt', label: 'Tiến độ Gantt', icon: <GitFork size={18} /> }
+    { id: 'gantt', label: 'Tiến độ Gantt', icon: <GitFork size={18} /> },
+    { id: 'team', label: 'Thành viên', icon: <Users size={18} /> }
   ];
 
   return (
@@ -132,7 +135,7 @@ const Sidebar = () => {
 
         <ul className="project-list">
           {projects.map((proj) => (
-            <li key={proj.id}>
+            <li key={proj.id} className="project-list-item">
               <button 
                 className={`project-btn clickable ${activeProjectId === proj.id ? 'active' : ''}`}
                 onClick={() => setActiveProjectId(proj.id)}
@@ -140,6 +143,18 @@ const Sidebar = () => {
                 <FolderGit2 size={16} />
                 <span className="project-name-text" title={proj.name}>{proj.name}</span>
               </button>
+              {projects.length > 1 && (
+                <button 
+                  className="project-delete-btn clickable"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteProject(proj.id);
+                  }}
+                  title={`Xóa dự án "${proj.name}"`}
+                >
+                  <Trash2 size={13} />
+                </button>
+              )}
             </li>
           ))}
         </ul>
@@ -147,8 +162,8 @@ const Sidebar = () => {
 
       {/* Team Section */}
       <div className="nav-section team-section">
-        <span className="section-title">THÀNH VIÊN ({members.length})</span>
-        <div className="member-avatars">
+        <span className="section-title clickable" onClick={() => setActiveTab('team')}>THÀNH VIÊN ({members.length})</span>
+        <div className="member-avatars clickable" onClick={() => setActiveTab('team')}>
           {members.map((member) => (
             <div 
               key={member.id} 

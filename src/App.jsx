@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import KanbanBoard from './components/KanbanBoard';
 import ListView from './components/ListView';
 import GanttChart from './components/GanttChart';
+import TeamView from './components/TeamView';
 import TaskDetailModal from './components/TaskDetailModal';
 import './App.css';
 
@@ -22,6 +23,8 @@ function App() {
         return <ListView onSelectTask={setSelectedTaskId} />;
       case 'gantt':
         return <GanttChart onSelectTask={setSelectedTaskId} />;
+      case 'team':
+        return <TeamView />;
       default:
         return <GanttChart onSelectTask={setSelectedTaskId} />;
     }

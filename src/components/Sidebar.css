@@ -190,6 +190,45 @@
   padding-right: 4px;
 }
 
+.project-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.project-list-item:hover .project-delete-btn {
+  opacity: 1;
+}
+
+.project-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; /* Hide by default, show on hover */
+  transition: all 0.2s ease;
+  position: absolute;
+  right: 6px;
+  z-index: 2;
+}
+
+.project-delete-btn:hover {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: var(--color-danger);
+}
+
+.project-list-item .project-btn {
+  padding-right: 36px; /* Leave space for delete button */
+}
+
 /* Member Avatars list */
 .member-avatars {
   display: flex;

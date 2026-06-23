@@ -35,22 +35,28 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const { tasks, projects, activeProjectId, activities } = useContext(ProjectContext);
+  const { tasks, projects, activeProjectId, activities, theme } = useContext(ProjectContext);
 
   const activeProject = projects.find(p => p.id === activeProjectId) || projects[0];
 
+  // Dynamic colors for Chart.js depending on active theme
+  const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b';
+  const gridColor = theme === 'dark' ? '#2a354f' : '#e2e8f0';
+  const textColor = theme === 'dark' ? '#f8fafc' : '#0f172a';
+
   // Calculate Stats
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(t => t.status === 'done').length;
-  const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
-  const reviewTasks = tasks.filter(t => t.status === 'in_review').length;
-  const todoTasks = tasks.filter(t => t.status === 'todo').length;
+  const completedTasks = tasks.filter(t => t && t.status === 'done').length;
+  const inProgressTasks = tasks.filter(t => t && t.status === 'in_progress').length;
+  const reviewTasks = tasks.filter(t => t && t.status === 'in_review').length;
+  const todoTasks = tasks.filter(t => t && t.status === 'todo').length;
   
   const pendingTasks = totalTasks - completedTasks;
 
   // Calculate Overdue
   const todayStr = new Date().toISOString().split('T')[0];
   const overdueTasks = tasks.filter(t => {
+    if (!t) return false;
     if (t.status === 'done') return false;
     const deadline = t.planEndDate || t.deadline;
     return deadline && deadline < todayStr;
@@ -99,12 +105,12 @@ const Dashboard = () => {
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: 'var(--text-muted)' }
+        ticks: { color: tickColor }
       },
       y: {
-        grid: { color: 'var(--border-color)', drawBorder: false },
+        grid: { color: gridColor, drawBorder: false },
         ticks: { 
-          color: 'var(--text-muted)',
+          color: tickColor,
           precision: 0 
         }
       }
@@ -112,9 +118,9 @@ const Dashboard = () => {
   };
 
   // Chart 2: Priority breakdown
-  const highPriority = tasks.filter(t => t.priority === 'high').length;
-  const mediumPriority = tasks.filter(t => t.priority === 'medium').length;
-  const lowPriority = tasks.filter(t => t.priority === 'low').length;
+  const highPriority = tasks.filter(t => t && t.priority === 'high').length;
+  const mediumPriority = tasks.filter(t => t && t.priority === 'medium').length;
+  const lowPriority = tasks.filter(t => t && t.priority === 'low').length;
 
   const priorityChartData = {
     labels: ['Ưu tiên Cao', 'Trung bình', 'Thấp'],
@@ -139,7 +145,7 @@ const Dashboard = () => {
       legend: {
         position: 'right',
         labels: {
-          color: 'var(--text-main)',
+          color: textColor,
           font: { family: 'var(--font-sans)', size: 12 }
         }
       },
