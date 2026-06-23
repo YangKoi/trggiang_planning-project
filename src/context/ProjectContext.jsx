@@ -376,6 +376,18 @@ export const ProjectProvider = ({ children }) => {
       }
       
       if (lastUpdated > remoteLastUpdated) {
+        // Safety check: If this browser has never successfully synced before,
+        // do not auto-overwrite the cloud file even if the local timestamp is newer.
+        const hasSyncedBefore = !!localStorage.getItem('nexus_last_sync_time');
+        if (!hasSyncedBefore) {
+          setConflictData({
+            localData: localPackage,
+            remoteData: remotePackage,
+            fileId: file.id
+          });
+          return;
+        }
+
         await updateDataFile(token, file.id, localPackage);
         setSyncState('success');
         const nowStr = new Date().toLocaleTimeString();
