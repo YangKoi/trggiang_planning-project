@@ -201,6 +201,7 @@
 
 .project-list-item:hover .project-delete-btn {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .project-delete-btn {
@@ -214,6 +215,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0; /* Hide by default, show on hover */
+  pointer-events: none; /* Ignore clicks when invisible */
   transition: all 0.2s ease;
   position: absolute;
   right: 6px;

@@ -35,7 +35,7 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const { tasks, projects, activeProjectId, activities, theme } = useContext(ProjectContext);
+  const { tasks, projects, activeProjectId, activities, theme, clearActivities } = useContext(ProjectContext);
 
   const activeProject = projects.find(p => p.id === activeProjectId) || projects[0];
 
@@ -236,8 +236,19 @@ const Dashboard = () => {
       {/* Activity Feed Section */}
       <div className="activity-card glass-panel">
         <div className="activity-header">
-          <Activity size={20} className="activity-icon" />
-          <h3 className="chart-title">Hoạt Động Gần Đây</h3>
+          <div className="activity-header-left">
+            <Activity size={20} className="activity-icon" />
+            <h3 className="chart-title">Hoạt Động Gần Đây</h3>
+          </div>
+          {activities.length > 0 && (
+            <button 
+              className="clear-activity-btn clickable"
+              onClick={clearActivities}
+              title="Xóa toàn bộ lịch sử"
+            >
+              Xóa lịch sử
+            </button>
+          )}
         </div>
         <div className="activity-list">
           {activities.length > 0 ? (

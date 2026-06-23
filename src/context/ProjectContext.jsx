@@ -280,6 +280,12 @@ export const ProjectProvider = ({ children }) => {
     }
   };
 
+  const clearActivities = () => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử hoạt động gần đây?')) {
+      setActivities([]);
+    }
+  };
+
   const addTask = (taskData) => {
     const newTask = {
       id: 'task_' + Date.now(),
@@ -382,6 +388,7 @@ export const ProjectProvider = ({ children }) => {
       deleteProject,
       addMember,
       deleteMember,
+      clearActivities,
       addTask,
       updateTask,
       deleteTask,

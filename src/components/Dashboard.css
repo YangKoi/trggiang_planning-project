@@ -131,12 +131,36 @@
 .activity-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
   margin-bottom: 20px;
+  width: 100%;
+}
+
+.activity-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .activity-icon {
   color: var(--color-primary);
+}
+
+.clear-activity-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.clear-activity-btn:hover {
+  background-color: rgba(244, 63, 94, 0.1);
+  color: var(--color-danger);
+  border-color: rgba(244, 63, 94, 0.2);
 }
 
 .activity-list {
