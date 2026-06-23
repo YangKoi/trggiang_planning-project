@@ -103,6 +103,17 @@
   color: var(--text-main);
 }
 
+.nav-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: auto;
+}
+
+.nav-btn.disabled:hover {
+  background: transparent;
+  color: var(--text-muted);
+}
+
 .nav-btn.active, .project-btn.active {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
   color: var(--color-primary);

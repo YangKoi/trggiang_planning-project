@@ -81,17 +81,22 @@ const Sidebar = () => {
       <nav className="nav-section">
         <span className="section-title">GIAO DIỆN</span>
         <ul className="nav-list">
-          {tabs.map((tab) => (
-            <li key={tab.id}>
-              <button 
-                className={`nav-btn clickable ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </button>
-            </li>
-          ))}
+          {tabs.map((tab) => {
+            const isDisabled = tab.id !== 'home' && activeTab === 'home';
+            return (
+              <li key={tab.id}>
+                <button 
+                  className={`nav-btn clickable ${activeTab === tab.id ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
+                  onClick={() => !isDisabled && setActiveTab(tab.id)}
+                  disabled={isDisabled}
+                  title={isDisabled ? 'Vui lòng chọn một dự án để xem chi tiết' : tab.label}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
