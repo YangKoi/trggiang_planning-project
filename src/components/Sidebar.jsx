@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ProjectContext } from '../context/ProjectContext';
 import { 
+  Home,
   LayoutDashboard, 
   KanbanSquare, 
   ListTodo, 
@@ -60,6 +61,7 @@ const Sidebar = () => {
   };
 
   const tabs = [
+    { id: 'home', label: 'Trang chủ', icon: <Home size={18} /> },
     { id: 'dashboard', label: 'Tổng quan', icon: <LayoutDashboard size={18} /> },
     { id: 'kanban', label: 'Bảng Kanban', icon: <KanbanSquare size={18} /> },
     { id: 'list', label: 'Danh sách', icon: <ListTodo size={18} /> },
@@ -70,7 +72,7 @@ const Sidebar = () => {
   return (
     <aside className="sidebar glass-panel">
       {/* Brand Header */}
-      <div className="brand">
+      <div className="brand clickable" onClick={() => setActiveTab('home')} title="Về trang chủ hệ thống">
         <div className="brand-logo text-glow">N</div>
         <span className="brand-name text-gradient">Nexus PM</span>
       </div>
@@ -155,8 +157,13 @@ const Sidebar = () => {
             return (
               <li key={proj.id} className="project-list-item">
                 <button 
-                  className={`project-btn clickable ${activeProjectId === proj.id ? 'active' : ''}`}
-                  onClick={() => setActiveProjectId(proj.id)}
+                  className={`project-btn clickable ${(activeProjectId === proj.id && activeTab !== 'home') ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveProjectId(proj.id);
+                    if (activeTab === 'home') {
+                      setActiveTab('gantt');
+                    }
+                  }}
                 >
                   <FolderGit2 size={16} />
                   <span className="project-name-text" title={proj.name}>{proj.name}</span>

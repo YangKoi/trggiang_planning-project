@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ProjectContext } from './context/ProjectContext';
 import Sidebar from './components/Sidebar';
+import HomeView from './components/HomeView';
 import Dashboard from './components/Dashboard';
 import KanbanBoard from './components/KanbanBoard';
 import ListView from './components/ListView';
@@ -15,6 +16,8 @@ function App() {
 
   const renderActiveView = () => {
     switch (activeTab) {
+      case 'home':
+        return <HomeView />;
       case 'dashboard':
         return <Dashboard />;
       case 'kanban':
@@ -26,7 +29,7 @@ function App() {
       case 'team':
         return <TeamView />;
       default:
-        return <GanttChart onSelectTask={setSelectedTaskId} />;
+        return <HomeView />;
     }
   };
 

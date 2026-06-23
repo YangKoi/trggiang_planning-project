@@ -223,7 +223,7 @@ export const ProjectProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : 'p1';
   });
 
-  const [activeTab, setActiveTab] = useState('gantt'); // Default to Gantt view because it is the requested signature tab!
+  const [activeTab, setActiveTab] = useState('home'); // Default to global Homepage view!
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('nexus_theme');
     return saved ? saved : 'dark'; // Dark mode default as requested!

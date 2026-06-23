@@ -1,0 +1,587 @@
+.home-view {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.home-header {
+  margin-bottom: 32px;
+}
+
+/* Sections */
+.home-section {
+  margin-top: 40px;
+}
+
+.section-title-large {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-main);
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title-row .section-title-large {
+  margin-bottom: 0;
+}
+
+.critical-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+/* Radial progress mini representation inside KPI */
+.radial-progress-mini {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--bg-card) 79%, transparent 80% 100%),
+              conic-gradient(var(--color-primary) var(--global-progress, 75%), var(--border-color) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fallback/overwrite */
+.stat-icon-wrapper.purple {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+}
+
+/* Projects Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Project Summary Card */
+.project-summary-card {
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 290px; /* Uniform height for grid balance */
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.project-summary-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.proj-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.proj-status-badge.active {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.proj-status-badge.completed {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.proj-status-badge.delayed {
+  background-color: rgba(244, 63, 94, 0.1);
+  color: var(--color-danger);
+}
+
+.proj-status-badge.empty {
+  background-color: var(--bg-input);
+  color: var(--text-muted);
+}
+
+.overdue-warning {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-danger);
+  background-color: rgba(244, 63, 94, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.proj-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proj-card-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Project Progress */
+.proj-progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+}
+
+.progress-pct-text {
+  color: var(--text-main);
+}
+
+.progress-bar-container {
+  height: 6px;
+  background-color: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--color-primary);
+  transition: width 0.4s ease;
+}
+
+.progress-bar-fill.completed {
+  background: var(--color-success);
+}
+
+.progress-bar-fill.delayed {
+  background: var(--color-danger);
+}
+
+.progress-bar-fill.active {
+  background: var(--color-primary);
+}
+
+/* Card Footer Lead & Members stack */
+.card-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.proj-card-lead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  padding: 4px 10px;
+  border-radius: 8px;
+  max-width: 170px;
+}
+
+.lead-avatar-mini {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.lead-details-mini {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lead-role-title {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.crown-icon-mini {
+  color: #f59e0b;
+}
+
+.lead-name-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-lead-text, .no-lead-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Members avatar stack */
+.members-avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.stack-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  border: 1.5px solid var(--bg-card);
+  margin-left: -6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stack-avatar:first-child {
+  margin-left: 0;
+}
+
+.stack-avatar.extra {
+  background-color: var(--bg-input);
+  color: var(--text-muted);
+  border-color: var(--border-color);
+  font-size: 8px;
+}
+
+/* Open detail indicator overlay */
+.open-proj-arrow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, var(--bg-card-hover), rgba(25, 34, 56, 0.95));
+  border-top: 1px solid var(--border-color);
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-primary);
+  transform: translateY(100%);
+  transition: transform 0.2s ease;
+}
+
+.project-summary-card:hover .open-proj-arrow {
+  transform: translateY(0);
+}
+
+/* Add project card representation */
+.add-project-card {
+  border: 1.5px dashed var(--border-color);
+  background-color: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-project-card:hover {
+  border-color: var(--color-primary);
+}
+
+.add-proj-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.add-proj-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(99, 102, 241, 0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  transition: all 0.25s ease;
+}
+
+.add-project-card:hover .add-proj-icon-circle {
+  transform: scale(1.1) rotate(90deg);
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.add-proj-inner h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.add-proj-inner p {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 220px;
+  line-height: 1.4;
+}
+
+/* Create Project Card Form styles */
+.add-project-form-card {
+  height: 290px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 14px;
+}
+
+.add-project-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.add-project-card-form input, 
+.add-project-card-form textarea,
+.add-project-card-form select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  outline: none;
+  width: 100%;
+}
+
+.add-project-card-form select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.add-project-card-form input:focus, 
+.add-project-card-form textarea:focus,
+.add-project-card-form select:focus {
+  border-color: var(--color-primary);
+}
+
+.form-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.form-submit-btn {
+  flex: 1;
+  padding: 8px;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+}
+
+.form-cancel-btn {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Critical Tasks Table */
+.critical-tasks-table-wrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.critical-tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.critical-tasks-table th {
+  padding: 16px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.critical-tasks-table td {
+  padding: 16px 20px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.critical-task-row:last-child td {
+  border-bottom: none;
+}
+
+.critical-task-row {
+  transition: background-color 0.2s ease;
+}
+
+.critical-task-row:hover {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.project-name-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.table-assignee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-assignee-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.deadline-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.deadline-icon {
+  color: var(--text-muted);
+}
+
+.table-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.table-status-badge.status-todo {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.table-status-badge.status-progress {
+  background-color: rgba(6, 182, 212, 0.1);
+  color: #06b6d4;
+}
+
+.table-status-badge.status-review {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.table-action-btn {
+  background-color: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.table-action-btn:hover {
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+@media (max-width: 900px) {
+  .critical-tasks-table th:nth-child(4),
+  .critical-tasks-table td:nth-child(4),
+  .critical-tasks-table th:nth-child(3),
+  .critical-tasks-table td:nth-child(3) {
+    display: none;
+  }
+}
