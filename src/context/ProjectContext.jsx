@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 export const ProjectContext = createContext();
 
 const initialMembers = [
-  { id: 'm1', name: 'Trần Giang', role: 'Project Manager', avatar: 'TG', color: '#6366f1' },
+  { id: 'm1', name: 'Trường Giang', role: 'Project Manager', avatar: 'TG', color: '#6366f1' },
   { id: 'm2', name: 'Nguyễn Hùng', role: 'Lead Developer', avatar: 'NH', color: '#10b981' },
   { id: 'm3', name: 'Lê Na', role: 'UI/UX Designer', avatar: 'LN', color: '#ec4899' },
   { id: 'm4', name: 'Phạm Minh', role: 'QA Tester', avatar: 'PM', color: '#f59e0b' }
@@ -148,7 +148,7 @@ const initialTasks = [
 const initialActivities = [
   { id: 'a1', text: 'đã hoàn thành công việc', taskTitle: 'Xây dựng cơ bản', user: 'Nguyễn Hùng', time: '1 giờ trước' },
   { id: 'a2', text: 'đã bắt đầu thực hiện', taskTitle: 'Lắp đặt Thiết bị', user: 'Nguyễn Hùng', time: '3 giờ trước' },
-  { id: 'a3', text: 'đã giao công việc', taskTitle: 'Bảo hành Công trình', user: 'Trần Giang', time: '1 ngày trước' }
+  { id: 'a3', text: 'đã giao công việc', taskTitle: 'Bảo hành Công trình', user: 'Trường Giang', time: '1 ngày trước' }
 ];
 
 export const ProjectProvider = ({ children }) => {
@@ -165,12 +165,57 @@ export const ProjectProvider = ({ children }) => {
 
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem('nexus_members');
-    return saved ? JSON.parse(saved) : initialMembers;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        let changed = false;
+        const migrated = parsed.map(m => {
+          if (m && m.name === 'Trần Giang') {
+            changed = true;
+            return { ...m, name: 'Trường Giang' };
+          }
+          return m;
+        });
+        if (changed) {
+          localStorage.setItem('nexus_members', JSON.stringify(migrated));
+        }
+        return migrated;
+      } catch (e) {}
+    }
+    return initialMembers;
   });
 
   const [activities, setActivities] = useState(() => {
     const saved = localStorage.getItem('nexus_activities');
-    return saved ? JSON.parse(saved) : initialActivities;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        let changed = false;
+        const migrated = parsed.map(act => {
+          let actChanged = false;
+          let newUser = act.user;
+          let newText = act.text;
+          if (act.user === 'Trần Giang') {
+            newUser = 'Trường Giang';
+            actChanged = true;
+          }
+          if (act.text && act.text.includes('Trần Giang')) {
+            newText = act.text.replaceAll('Trần Giang', 'Trường Giang');
+            actChanged = true;
+          }
+          if (actChanged) {
+            changed = true;
+            return { ...act, user: newUser, text: newText };
+          }
+          return act;
+        });
+        if (changed) {
+          localStorage.setItem('nexus_activities', JSON.stringify(migrated));
+        }
+        return migrated;
+      } catch (e) {}
+    }
+    return initialActivities;
   });
 
   const [activeProjectId, setActiveProjectId] = useState(() => {
@@ -216,7 +261,7 @@ export const ProjectProvider = ({ children }) => {
   }, [theme]);
 
   // Log an activity helper
-  const logActivity = (text, taskTitle, user = 'Trần Giang') => {
+  const logActivity = (text, taskTitle, user = 'Trường Giang') => {
     const newAct = {
       id: 'act_' + Date.now(),
       text,
