@@ -239,7 +239,13 @@ export const ProjectProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
   const [googleClientId, setGoogleClientIdState] = useState(() => {
-    return localStorage.getItem('nexus_google_client_id') || '1043361750961-mu70iovvgu2flgmhl2grj6qisnmeni32.apps.googleusercontent.com';
+    const saved = localStorage.getItem('nexus_google_client_id');
+    // If the saved client ID is the old invalid placeholder, migrate it to the new valid one
+    if (saved === '86835265538-t3l66r7g977t9f0siv6d00f7o8rve79k.apps.googleusercontent.com') {
+      localStorage.setItem('nexus_google_client_id', '1043361750961-mu70iovvgu2flgmhl2grj6qisnmeni32.apps.googleusercontent.com');
+      return '1043361750961-mu70iovvgu2flgmhl2grj6qisnmeni32.apps.googleusercontent.com';
+    }
+    return saved || '1043361750961-mu70iovvgu2flgmhl2grj6qisnmeni32.apps.googleusercontent.com';
   });
   const [syncState, setSyncState] = useState('idle');
 
@@ -320,7 +326,7 @@ export const ProjectProvider = ({ children }) => {
           }
         },
       });
-      client.requestAccessToken({ prompt: '' });
+      client.requestAccessToken({ prompt: 'select_account' });
     } else {
       alert('Không thể kết nối đến Google Identity Services. Vui lòng tải lại trang.');
     }
