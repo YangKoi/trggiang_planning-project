@@ -13,7 +13,9 @@ import {
   Upload, 
   Plus, 
   FolderGit2,
-  Trash2
+  Trash2,
+  RefreshCw,
+  LogOut
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -30,7 +32,14 @@ const Sidebar = () => {
     addProject,
     deleteProject,
     exportData,
-    importData
+    importData,
+    googleToken,
+    googleProfile,
+    syncState,
+    lastSyncTime,
+    handleGoogleLogin,
+    handleGoogleLogout,
+    syncWithDrive
   } = useContext(ProjectContext);
 
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -215,6 +224,58 @@ const Sidebar = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Google Drive Sync Controls */}
+      <div className="drive-sync-section">
+        {!googleToken ? (
+          <button className="drive-connect-btn clickable" onClick={handleGoogleLogin}>
+            <svg className="google-icon" viewBox="0 0 24 24" width="16" height="16">
+              <path fill="#EA4335" d="M12 5.04c1.67 0 3.2.58 4.38 1.69l3.27-3.27C17.67 1.63 15.02 1 12 1 7.37 1 3.42 3.66 1.5 7.56l3.96 3.07C6.38 7.56 8.96 5.04 12 5.04z"/>
+              <path fill="#4285F4" d="M23.49 12.27c0-.82-.07-1.6-.2-2.36H12v4.51h6.45c-.28 1.48-1.11 2.73-2.36 3.58v2.98h3.82c2.23-2.05 3.58-5.07 3.58-8.71z"/>
+              <path fill="#FBBC05" d="M5.46 10.63c-.24-.73-.38-1.51-.38-2.31s.14-1.58.38-2.31L1.5 2.94C.54 4.88 0 7.07 0 9.38s.54 4.5 1.5 6.44l3.96-3.19z"/>
+              <path fill="#34A853" d="M12 18.96c-3.04 0-5.62-2.52-6.54-5.59L1.5 16.56C3.42 20.34 7.37 23 12 23c2.98 0 5.62-1.02 7.51-2.77l-3.82-2.98c-1.05.71-2.4 1.71-3.69 1.71z"/>
+            </svg>
+            <span>Kết nối Google Drive</span>
+          </button>
+        ) : (
+          <div className="drive-sync-panel glass-panel">
+            <div className="drive-user-info">
+              {googleProfile?.picture ? (
+                <img src={googleProfile.picture} alt="Google Avatar" className="drive-avatar" />
+              ) : (
+                <div className="drive-avatar-placeholder">
+                  {googleProfile?.name ? googleProfile.name.charAt(0).toUpperCase() : 'G'}
+                </div>
+              )}
+              <div className="drive-user-meta">
+                <span className="drive-user-name" title={googleProfile?.name}>{googleProfile?.name || 'Tài khoản Google'}</span>
+                <span className={`drive-sync-time ${syncState}`}>
+                  {syncState === 'syncing' ? 'Đang đồng bộ...' : 
+                   syncState === 'error' ? 'Lỗi đồng bộ' : 
+                   lastSyncTime ? `Đã lưu: ${lastSyncTime}` : 'Đã kết nối'}
+                </span>
+              </div>
+            </div>
+            <div className="drive-actions">
+              <button 
+                className={`drive-action-btn sync clickable ${syncState === 'syncing' ? 'spinning' : ''}`}
+                onClick={() => syncWithDrive(googleToken, false)}
+                title="Đồng bộ ngay"
+                disabled={syncState === 'syncing'}
+              >
+                <RefreshCw size={14} />
+              </button>
+              <button 
+                className="drive-action-btn logout clickable"
+                onClick={handleGoogleLogout}
+                title="Đăng xuất Google Drive"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Sidebar Footer Controls */}

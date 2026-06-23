@@ -8,10 +8,11 @@ import ListView from './components/ListView';
 import GanttChart from './components/GanttChart';
 import TeamView from './components/TeamView';
 import TaskDetailModal from './components/TaskDetailModal';
+import ConflictModal from './components/ConflictModal';
 import './App.css';
 
 function App() {
-  const { activeTab } = useContext(ProjectContext);
+  const { activeTab, conflictData } = useContext(ProjectContext);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   const renderActiveView = () => {
@@ -50,6 +51,9 @@ function App() {
           onClose={() => setSelectedTaskId(null)} 
         />
       )}
+
+      {/* Google Drive Conflict Resolution Modal */}
+      {conflictData && <ConflictModal />}
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
+import { fetchUserProfile, findDataFile, downloadDataFile, createDataFile, updateDataFile } from '../utils/driveService';
 
 export const ProjectContext = createContext();
 
@@ -229,6 +230,25 @@ export const ProjectProvider = ({ children }) => {
     return saved ? saved : 'dark'; // Dark mode default as requested!
   });
 
+  // Google Drive Sync States
+  const [googleToken, setGoogleToken] = useState(() => {
+    return localStorage.getItem('nexus_google_token') || '';
+  });
+  const [googleProfile, setGoogleProfile] = useState(() => {
+    const saved = localStorage.getItem('nexus_google_profile');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [syncState, setSyncState] = useState('idle');
+  const [conflictData, setConflictData] = useState(null);
+  const [lastSyncTime, setLastSyncTime] = useState(() => {
+    return localStorage.getItem('nexus_last_sync_time') || '';
+  });
+
+  const [lastUpdated, setLastUpdated] = useState(() => {
+    const saved = localStorage.getItem('nexus_last_updated');
+    return saved ? parseInt(saved) : Date.now();
+  });
+
   // Sync to local storage
   useEffect(() => {
     localStorage.setItem('nexus_projects', JSON.stringify(projects));
@@ -249,6 +269,173 @@ export const ProjectProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('nexus_active_project_id', JSON.stringify(activeProjectId));
   }, [activeProjectId]);
+
+  useEffect(() => {
+    localStorage.setItem('nexus_last_updated', lastUpdated.toString());
+  }, [lastUpdated]);
+
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    setLastUpdated(Date.now());
+  }, [projects, tasks, members, activities]);
+
+  const handleGoogleLogin = () => {
+    if (window.google) {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: '86835265538-t3l66r7g977t9f0siv6d00f7o8rve79k.apps.googleusercontent.com',
+        scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+        callback: async (tokenResponse) => {
+          if (tokenResponse && tokenResponse.access_token) {
+            setGoogleToken(tokenResponse.access_token);
+            localStorage.setItem('nexus_google_token', tokenResponse.access_token);
+            
+            try {
+              setSyncState('syncing');
+              const profile = await fetchUserProfile(tokenResponse.access_token);
+              setGoogleProfile(profile);
+              localStorage.setItem('nexus_google_profile', JSON.stringify(profile));
+              
+              await syncWithDrive(tokenResponse.access_token, true);
+            } catch (err) {
+              setSyncState('error');
+              alert('Lỗi đăng nhập Google: ' + err.message);
+            }
+          }
+        },
+      });
+      client.requestAccessToken({ prompt: '' });
+    } else {
+      alert('Không thể kết nối đến Google Identity Services. Vui lòng tải lại trang.');
+    }
+  };
+
+  const handleGoogleLogout = () => {
+    setGoogleToken('');
+    setGoogleProfile(null);
+    localStorage.removeItem('nexus_google_token');
+    localStorage.removeItem('nexus_google_profile');
+    setSyncState('idle');
+  };
+
+  const syncWithDrive = async (token = googleToken, checkOnly = false) => {
+    if (!token) return;
+    try {
+      setSyncState('syncing');
+      
+      const file = await findDataFile(token);
+      
+      const localPackage = {
+        projects,
+        tasks: tasks,
+        members,
+        activities,
+        lastUpdated
+      };
+      
+      if (!file) {
+        await createDataFile(token, localPackage);
+        setSyncState('success');
+        const nowStr = new Date().toLocaleTimeString();
+        setLastSyncTime(nowStr);
+        localStorage.setItem('nexus_last_sync_time', nowStr);
+        return;
+      }
+      
+      const remotePackage = await downloadDataFile(token, file.id);
+      const remoteLastUpdated = remotePackage.lastUpdated || 0;
+      
+      if (Math.abs(lastUpdated - remoteLastUpdated) < 2000) {
+        setSyncState('success');
+        const nowStr = new Date().toLocaleTimeString();
+        setLastSyncTime(nowStr);
+        localStorage.setItem('nexus_last_sync_time', nowStr);
+        return;
+      }
+      
+      if (lastUpdated > remoteLastUpdated) {
+        await updateDataFile(token, file.id, localPackage);
+        setSyncState('success');
+        const nowStr = new Date().toLocaleTimeString();
+        setLastSyncTime(nowStr);
+        localStorage.setItem('nexus_last_sync_time', nowStr);
+      } else {
+        if (checkOnly) {
+          applyRemoteData(remotePackage);
+          setSyncState('success');
+          const nowStr = new Date().toLocaleTimeString();
+          setLastSyncTime(nowStr);
+          localStorage.setItem('nexus_last_sync_time', nowStr);
+        } else {
+          setConflictData({
+            localData: localPackage,
+            remoteData: remotePackage,
+            fileId: file.id
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.message.includes('401') || err.message.includes('Authorization') || err.message.includes('token')) {
+        handleGoogleLogout();
+        alert('Phiên kết nối Google Drive đã hết hạn. Vui lòng kết nối lại.');
+      } else {
+        setSyncState('error');
+      }
+    }
+  };
+
+  const applyRemoteData = (remotePackage) => {
+    if (remotePackage.projects) setProjects(remotePackage.projects);
+    if (remotePackage.tasks) setTasks(remotePackage.tasks);
+    if (remotePackage.members) setMembers(remotePackage.members);
+    if (remotePackage.activities) setActivities(remotePackage.activities);
+    if (remotePackage.lastUpdated) {
+      setLastUpdated(remotePackage.lastUpdated);
+      localStorage.setItem('nexus_last_updated', remotePackage.lastUpdated.toString());
+    }
+    setConflictData(null);
+  };
+
+  const forceUploadLocalData = async () => {
+    if (!googleToken) return;
+    try {
+      setSyncState('syncing');
+      const file = await findDataFile(googleToken);
+      const localPackage = {
+        projects,
+        tasks: tasks,
+        members,
+        activities,
+        lastUpdated
+      };
+      if (file) {
+        await updateDataFile(googleToken, file.id, localPackage);
+      } else {
+        await createDataFile(googleToken, localPackage);
+      }
+      setSyncState('success');
+      const nowStr = new Date().toLocaleTimeString();
+      setLastSyncTime(nowStr);
+      localStorage.setItem('nexus_last_sync_time', nowStr);
+      setConflictData(null);
+    } catch (err) {
+      setSyncState('error');
+      alert('Lỗi tải dữ liệu lên: ' + err.message);
+    }
+  };
+
+  // Auto-sync in background
+  useEffect(() => {
+    if (!googleToken) return;
+    const delayDebounce = setTimeout(() => {
+      syncWithDrive(googleToken, false);
+    }, 4000);
+    return () => clearTimeout(delayDebounce);
+  }, [lastUpdated, googleToken]);
 
   useEffect(() => {
     localStorage.setItem('nexus_theme', theme);
@@ -508,7 +695,20 @@ export const ProjectProvider = ({ children }) => {
       deleteTask,
       moveTask,
       exportData,
-      importData
+      importData,
+      googleToken,
+      googleProfile,
+      syncState,
+      lastSyncTime,
+      conflictData,
+      setConflictData,
+      handleGoogleLogin,
+      handleGoogleLogout,
+      syncWithDrive,
+      applyRemoteData,
+      forceUploadLocalData,
+      lastUpdated,
+      setLastUpdated
     }}>
       {children}
     </ProjectContext.Provider>
