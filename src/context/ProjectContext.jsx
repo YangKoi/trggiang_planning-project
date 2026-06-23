@@ -239,7 +239,7 @@ export const ProjectProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
   const [googleClientId, setGoogleClientIdState] = useState(() => {
-    return localStorage.getItem('nexus_google_client_id') || '86835265538-t3l66r7g977t9f0siv6d00f7o8rve79k.apps.googleusercontent.com';
+    return localStorage.getItem('nexus_google_client_id') || '1043361750961-mu70iovvgu2flgmhl2grj6qisnmeni32.apps.googleusercontent.com';
   });
   const [syncState, setSyncState] = useState('idle');
 
