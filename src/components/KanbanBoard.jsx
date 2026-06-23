@@ -52,7 +52,7 @@ const KanbanBoard = ({ onSelectTask }) => {
   const getPriorityLabel = (priority) => {
     switch (priority) {
       case 'high': return 'Cao';
-      case 'medium': return 'Trưng bình';
+      case 'medium': return 'Trung bình';
       case 'low': return 'Thấp';
       default: return 'Thấp';
     }
