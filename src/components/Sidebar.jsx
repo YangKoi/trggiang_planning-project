@@ -35,13 +35,15 @@ const Sidebar = () => {
   const [newProjectOpen, setNewProjectOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
+  const [newProjectLeadId, setNewProjectLeadId] = useState('');
 
   const handleCreateProject = (e) => {
     e.preventDefault();
     if (newProjectName.trim()) {
-      addProject(newProjectName.trim(), newProjectDesc.trim());
+      addProject(newProjectName.trim(), newProjectDesc.trim(), newProjectLeadId);
       setNewProjectName('');
       setNewProjectDesc('');
+      setNewProjectLeadId('');
       setNewProjectOpen(false);
     }
   };
@@ -120,12 +122,26 @@ const Sidebar = () => {
               value={newProjectDesc}
               onChange={(e) => setNewProjectDesc(e.target.value)}
             />
+            <select 
+              value={newProjectLeadId}
+              onChange={(e) => setNewProjectLeadId(e.target.value)}
+              required
+              className="new-project-lead-select"
+            >
+              <option value="">-- Người chịu trách nhiệm --</option>
+              {members.map(m => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
             <div className="form-actions">
               <button type="submit" className="submit-btn clickable">Tạo</button>
               <button 
                 type="button" 
                 className="cancel-btn clickable" 
-                onClick={() => setNewProjectOpen(false)}
+                onClick={() => {
+                  setNewProjectOpen(false);
+                  setNewProjectLeadId('');
+                }}
               >
                 Hủy
               </button>
@@ -134,29 +150,41 @@ const Sidebar = () => {
         )}
 
         <ul className="project-list">
-          {projects.map((proj) => (
-            <li key={proj.id} className="project-list-item">
-              <button 
-                className={`project-btn clickable ${activeProjectId === proj.id ? 'active' : ''}`}
-                onClick={() => setActiveProjectId(proj.id)}
-              >
-                <FolderGit2 size={16} />
-                <span className="project-name-text" title={proj.name}>{proj.name}</span>
-              </button>
-              {projects.length > 1 && (
+          {projects.map((proj) => {
+            const leadMember = members.find(m => m.id === proj.leadId);
+            return (
+              <li key={proj.id} className="project-list-item">
                 <button 
-                  className="project-delete-btn clickable"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteProject(proj.id);
-                  }}
-                  title={`Xóa dự án "${proj.name}"`}
+                  className={`project-btn clickable ${activeProjectId === proj.id ? 'active' : ''}`}
+                  onClick={() => setActiveProjectId(proj.id)}
                 >
-                  <Trash2 size={13} />
+                  <FolderGit2 size={16} />
+                  <span className="project-name-text" title={proj.name}>{proj.name}</span>
+                  {leadMember && (
+                    <div 
+                      className="project-lead-mini-avatar" 
+                      style={{ backgroundColor: leadMember.color }}
+                      title={`Chịu trách nhiệm: ${leadMember.name} (${leadMember.role})`}
+                    >
+                      {leadMember.avatar}
+                    </div>
+                  )}
                 </button>
-              )}
-            </li>
-          ))}
+                {projects.length > 1 && (
+                  <button 
+                    className="project-delete-btn clickable"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteProject(proj.id);
+                    }}
+                    title={`Xóa dự án "${proj.name}"`}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
 

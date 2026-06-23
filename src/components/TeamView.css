@@ -18,8 +18,14 @@
   }
 }
 
-/* Add Member Card */
-.add-member-card {
+.team-sidebar-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Cards */
+.form-card {
   padding: 24px;
   border-radius: 16px;
   border: 1px solid var(--border-color);
@@ -29,7 +35,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
 }
@@ -39,15 +45,21 @@
 }
 
 .card-title-text {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-main);
+}
+
+.form-info-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
 }
 
 .add-member-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .input-group {
@@ -57,13 +69,14 @@
 }
 
 .input-group label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.input-group input {
+.input-group input, .input-group select {
   padding: 10px 14px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -73,11 +86,16 @@
   transition: border-color 0.2s ease;
 }
 
-.input-group input:focus {
+.input-group select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.input-group input:focus, .input-group select:focus {
   border-color: var(--color-primary);
 }
 
-/* Color Picker Row */
+/* Color picker row */
 .color-picker-row {
   display: flex;
   align-items: center;
@@ -85,8 +103,8 @@
 }
 
 .color-picker-input {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   padding: 0 !important;
   border: none !important;
   border-radius: 50% !important;
@@ -111,40 +129,68 @@
 }
 
 .color-preview-circle {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   margin-left: auto;
   box-shadow: var(--shadow-sm);
 }
 
-/* Submit Button */
+/* Submit buttons */
 .add-member-submit-btn {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   color: white;
   border: none;
   border-radius: 10px;
   font-weight: 600;
+  font-size: 13.5px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
 }
 
-/* Members Directory */
+.project-add-btn {
+  background: var(--color-primary);
+}
+
+.no-more-members-text, .no-members-card {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+}
+
+.no-members-card {
+  padding: 32px;
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+}
+
+/* Directory columns */
 .members-directory {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 36px;
+}
+
+.directory-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .section-heading-text {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-main);
+  border-left: 3px solid var(--color-primary);
+  padding-left: 10px;
+  line-height: 1.2;
 }
 
 .members-grid {
@@ -153,8 +199,8 @@
   gap: 20px;
 }
 
-/* Member Card */
-.member-card {
+/* Project Member Card (Column layout) */
+.project-member-card {
   padding: 24px;
   border-radius: 16px;
   border: 1px solid var(--border-color);
@@ -167,8 +213,8 @@
 
 .member-delete-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -182,7 +228,8 @@
   transition: all 0.2s ease;
 }
 
-.member-card:hover .member-delete-btn {
+.project-member-card:hover .member-delete-btn,
+.company-member-card:hover .member-delete-btn {
   opacity: 1;
 }
 
@@ -192,39 +239,40 @@
 }
 
 .member-card-avatar {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow-md);
-  border: 3px solid var(--bg-card);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--bg-card);
 }
 
 .member-card-name {
-  font-size: 15.5px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--text-main);
   margin-bottom: 4px;
 }
 
 .member-card-role {
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .role-icon {
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .member-workload-badge {
@@ -241,15 +289,214 @@
 
 .workload-value {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--color-primary);
   line-height: 1;
 }
 
 .workload-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
+}
+
+/* Company Member Card (Horizontal layout) */
+.company-member-card {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.company-directory-section .members-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.member-card-avatar.mini {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.company-member-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.company-member-details .member-card-name {
+  margin-bottom: 0;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.company-member-details .member-card-role {
+  margin-bottom: 0;
+  font-size: 11px;
+}
+
+.company-member-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-right: 12px; /* Avoid overlapping delete button */
+}
+
+.comp-stat-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background-color: rgba(99, 102, 241, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.comp-project-status {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.comp-project-status.active {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.comp-project-status.inactive {
+  background-color: var(--bg-input);
+  color: var(--text-muted);
+}
+
+/* Directory Header Layout & Selector */
+.directory-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.lead-selector-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lead-selector-dropdown-wrapper label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.lead-select-dropdown {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12.5px;
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.lead-select-dropdown:focus {
+  border-color: var(--color-primary);
+}
+
+.lead-select-dropdown option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+/* Lead Active Card Highlight */
+.project-member-card.lead-active {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.12);
+}
+
+/* Project Lead Badge Overlay */
+.project-lead-badge-overlay {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* Member Card Actions (Lead Crown + Remove buttons) */
+.member-card-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 3;
+}
+
+.project-member-card:hover .member-card-actions {
+  opacity: 1;
+}
+
+.member-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.member-action-btn:hover {
+  background-color: var(--bg-card-hover);
+}
+
+.member-action-btn.set-lead:hover {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.member-action-btn.remove-proj:hover {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: var(--color-danger);
 }

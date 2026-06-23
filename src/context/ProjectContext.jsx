@@ -10,9 +10,10 @@ const initialMembers = [
 ];
 
 const initialProjects = [
-  { id: 'p1', name: 'CIC_PLAN - Tiến độ thực hiện', description: 'Kế hoạch và tiến độ thực hiện dự án hạ tầng công nghệ thông tin CIC.' },
-  { id: 'p2', name: 'Website Cổng thông tin', description: 'Xây dựng lại cổng thông tin điện tử tích hợp dịch vụ công trực tuyến.' }
+  { id: 'p1', name: 'CIC_PLAN - Tiến độ thực hiện', description: 'Kế hoạch và tiến độ thực hiện dự án hạ tầng công nghệ thông tin CIC.', memberIds: ['m1', 'm2', 'm4'], leadId: 'm1' },
+  { id: 'p2', name: 'Website Cổng thông tin', description: 'Xây dựng lại cổng thông tin điện tử tích hợp dịch vụ công trực tuyến.', memberIds: ['m2', 'm3'], leadId: 'm2' }
 ];
+
 
 const initialTasks = [
   // Tasks for Project p1 (matching the user's reference image exactly)
@@ -227,15 +228,73 @@ export const ProjectProvider = ({ children }) => {
   };
 
   // Actions
-  const addProject = (name, description) => {
+  const addProject = (name, description, leadId) => {
+    const defaultLead = leadId || (members.length > 0 ? members[0].id : '');
     const newProj = {
       id: 'proj_' + Date.now(),
       name,
-      description: description || ''
+      description: description || '',
+      memberIds: defaultLead ? (members.map(m => m.id).includes(defaultLead) ? members.map(m => m.id) : [...members.map(m => m.id), defaultLead]) : members.map(m => m.id),
+      leadId: defaultLead
     };
     setProjects(prev => [...prev, newProj]);
     setActiveProjectId(newProj.id);
     logActivity('đã tạo dự án mới', name);
+  };
+
+  const addMemberToProject = (projId, memberId) => {
+    setProjects(prev => prev.map(p => {
+      if (p.id === projId) {
+        const currentIds = p.memberIds || [];
+        if (!currentIds.includes(memberId)) {
+          return { ...p, memberIds: [...currentIds, memberId] };
+        }
+      }
+      return p;
+    }));
+    const m = members.find(mem => mem.id === memberId);
+    const p = projects.find(proj => proj.id === projId);
+    if (m && p) {
+      logActivity(`đã thêm ${m.name} vào dự án`, p.name);
+    }
+  };
+
+  const removeMemberFromProject = (projId, memberId) => {
+    setProjects(prev => prev.map(p => {
+      if (p.id === projId) {
+        const currentIds = p.memberIds || [];
+        const remainingIds = currentIds.filter(id => id !== memberId);
+        const isLead = p.leadId === memberId;
+        const newLeadId = isLead ? (remainingIds[0] || '') : p.leadId;
+        return { ...p, memberIds: remainingIds, leadId: newLeadId };
+      }
+      return p;
+    }));
+    
+    // Clear tasks in this project assigned to this member
+    setTasks(prev => prev.map(t => (t && t.projectId === projId && t.assigneeId === memberId) ? { ...t, assigneeId: '' } : t));
+
+    const m = members.find(mem => mem.id === memberId);
+    const p = projects.find(proj => proj.id === projId);
+    if (m && p) {
+      logActivity(`đã loại ${m.name} khỏi dự án`, p.name);
+    }
+  };
+
+  const setProjectLead = (projId, leadId) => {
+    setProjects(prev => prev.map(p => {
+      if (p.id === projId) {
+        const currentIds = p.memberIds || [];
+        const updatedIds = currentIds.includes(leadId) ? currentIds : [...currentIds, leadId];
+        return { ...p, leadId, memberIds: updatedIds };
+      }
+      return p;
+    }));
+    const m = members.find(mem => mem.id === leadId);
+    const p = projects.find(proj => proj.id === projId);
+    if (m && p) {
+      logActivity(`đã chỉ định ${m.name} làm trưởng dự án`, p.name);
+    }
   };
 
   const deleteProject = (projId) => {
@@ -274,6 +333,13 @@ export const ProjectProvider = ({ children }) => {
     if (memberToDelete) {
       if (window.confirm(`Bạn có chắc chắn muốn xóa thành viên "${memberToDelete.name}"? Các công việc được giao cho thành viên này sẽ trở thành chưa phân công.`)) {
         setMembers(prev => prev.filter(m => m.id !== memberId));
+        setProjects(prev => prev.map(p => {
+          const currentIds = p.memberIds || [];
+          const remainingIds = currentIds.filter(id => id !== memberId);
+          const isLead = p.leadId === memberId;
+          const newLeadId = isLead ? (remainingIds[0] || '') : p.leadId;
+          return { ...p, memberIds: remainingIds, leadId: newLeadId };
+        }));
         setTasks(prev => prev.map(t => t.assigneeId === memberId ? { ...t, assigneeId: '' } : t));
         logActivity('đã xóa thành viên', memberToDelete.name);
       }
@@ -386,6 +452,9 @@ export const ProjectProvider = ({ children }) => {
       setTheme,
       addProject,
       deleteProject,
+      addMemberToProject,
+      removeMemberFromProject,
+      setProjectLead,
       addMember,
       deleteMember,
       clearActivities,

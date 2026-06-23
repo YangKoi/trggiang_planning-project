@@ -8,12 +8,22 @@ const TaskDetailModal = ({ taskId, onClose }) => {
     tasks, 
     updateTask, 
     deleteTask, 
-    members 
+    members,
+    projects,
+    activeProjectId
   } = useContext(ProjectContext);
 
   const task = tasks.find(t => t.id === taskId);
 
   if (!task) return null;
+
+  const activeProject = projects.find(p => p.id === activeProjectId);
+  const projectMembers = members.filter(m => {
+    if (activeProject && activeProject.memberIds) {
+      return activeProject.memberIds.includes(m.id);
+    }
+    return true;
+  });
 
   // Local States
   const [title, setTitle] = useState(task.title);
@@ -316,7 +326,7 @@ const TaskDetailModal = ({ taskId, onClose }) => {
                 }}
               >
                 <option value="">Chọn người phụ trách</option>
-                {members.map(m => (
+                {projectMembers.map(m => (
                   <option key={m.id} value={m.id}>{m.name}</option>
                 ))}
               </select>

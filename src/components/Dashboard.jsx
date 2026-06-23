@@ -35,9 +35,10 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const { tasks, projects, activeProjectId, activities, theme, clearActivities } = useContext(ProjectContext);
+  const { tasks, projects, activeProjectId, activities, theme, clearActivities, members } = useContext(ProjectContext);
 
   const activeProject = projects.find(p => p.id === activeProjectId) || projects[0];
+  const leadMember = activeProject ? members.find(m => m.id === activeProject.leadId) : null;
 
   // Dynamic colors for Chart.js depending on active theme
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b';
@@ -162,9 +163,32 @@ const Dashboard = () => {
   return (
     <div className="dashboard-view fade-in">
       {/* Header */}
-      <div className="view-header">
-        <h1 className="view-title">{activeProject?.name || 'Tổng quan dự án'}</h1>
-        <p className="view-subtitle">{activeProject?.description || 'Chi tiết thông số phân tích dự án.'}</p>
+      <div className="view-header dashboard-header-row">
+        <div>
+          <h1 className="view-title">{activeProject?.name || 'Tổng quan dự án'}</h1>
+          <p className="view-subtitle">{activeProject?.description || 'Chi tiết thông số phân tích dự án.'}</p>
+        </div>
+        {leadMember ? (
+          <div className="dashboard-project-lead glass-panel" title="Thành viên chịu trách nhiệm chính cho dự án">
+            <span className="lead-label">Người phụ trách chính</span>
+            <div className="lead-info">
+              <div 
+                className="lead-avatar" 
+                style={{ backgroundColor: leadMember.color }}
+              >
+                {leadMember.avatar}
+              </div>
+              <div className="lead-meta">
+                <span className="lead-name">{leadMember.name}</span>
+                <span className="lead-role">{leadMember.role}</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="dashboard-project-lead glass-panel warning">
+            <span className="lead-label">Chưa chỉ định người phụ trách</span>
+          </div>
+        )}
       </div>
 
       {/* KPI Stats Grid */}
