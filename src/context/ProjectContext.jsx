@@ -340,74 +340,31 @@ export const ProjectProvider = ({ children }) => {
     setSyncState('idle');
   };
 
-  const syncWithDrive = async (token = googleToken, checkOnly = false) => {
-    if (!token) return;
+  const backupToDrive = async () => {
+    if (!googleToken) return;
     try {
       setSyncState('syncing');
-      
-      const file = await findDataFile(token);
+      const file = await findDataFile(googleToken);
       
       const localPackage = {
         projects,
-        tasks: tasks,
+        tasks: tasks, // full tasks array
         members,
         activities,
-        lastUpdated
+        lastUpdated: Date.now()
       };
       
-      if (!file) {
-        await createDataFile(token, localPackage);
-        setSyncState('success');
-        const nowStr = new Date().toLocaleTimeString();
-        setLastSyncTime(nowStr);
-        localStorage.setItem('nexus_last_sync_time', nowStr);
-        return;
-      }
-      
-      const remotePackage = await downloadDataFile(token, file.id);
-      const remoteLastUpdated = remotePackage.lastUpdated || 0;
-      
-      if (Math.abs(lastUpdated - remoteLastUpdated) < 2000) {
-        setSyncState('success');
-        const nowStr = new Date().toLocaleTimeString();
-        setLastSyncTime(nowStr);
-        localStorage.setItem('nexus_last_sync_time', nowStr);
-        return;
-      }
-      
-      if (lastUpdated > remoteLastUpdated) {
-        // Safety check: If this browser has never successfully synced before,
-        // do not auto-overwrite the cloud file even if the local timestamp is newer.
-        const hasSyncedBefore = !!localStorage.getItem('nexus_last_sync_time');
-        if (!hasSyncedBefore) {
-          setConflictData({
-            localData: localPackage,
-            remoteData: remotePackage,
-            fileId: file.id
-          });
-          return;
-        }
-
-        await updateDataFile(token, file.id, localPackage);
-        setSyncState('success');
-        const nowStr = new Date().toLocaleTimeString();
-        setLastSyncTime(nowStr);
-        localStorage.setItem('nexus_last_sync_time', nowStr);
+      if (file) {
+        await updateDataFile(googleToken, file.id, localPackage);
       } else {
-        if (checkOnly) {
-          applyRemoteData(remotePackage);
-          setSyncState('success');
-          const nowStr = new Date().toLocaleTimeString();
-          setLastSyncTime(nowStr);
-          localStorage.setItem('nexus_last_sync_time', nowStr);
-        } else {
-          setConflictData({
-            localData: localPackage,
-            remoteData: remotePackage,
-            fileId: file.id
-          });
-        }
+        await createDataFile(googleToken, localPackage);
       }
+      
+      setSyncState('success');
+      const nowStr = new Date().toLocaleString('vi-VN');
+      setLastSyncTime(nowStr);
+      localStorage.setItem('nexus_last_sync_time', nowStr);
+      alert('Đã sao lưu dữ liệu lên Google Drive thành công!');
     } catch (err) {
       console.error(err);
       if (err.message.includes('401') || err.message.includes('Authorization') || err.message.includes('token')) {
@@ -415,58 +372,56 @@ export const ProjectProvider = ({ children }) => {
         alert('Phiên kết nối Google Drive đã hết hạn. Vui lòng kết nối lại.');
       } else {
         setSyncState('error');
+        alert('Lỗi sao lưu lên Google Drive: ' + err.message);
       }
     }
   };
 
-  const applyRemoteData = (remotePackage) => {
-    if (remotePackage.projects) setProjects(remotePackage.projects);
-    if (remotePackage.tasks) setTasks(remotePackage.tasks);
-    if (remotePackage.members) setMembers(remotePackage.members);
-    if (remotePackage.activities) setActivities(remotePackage.activities);
-    if (remotePackage.lastUpdated) {
-      setLastUpdated(remotePackage.lastUpdated);
-      localStorage.setItem('nexus_last_updated', remotePackage.lastUpdated.toString());
-    }
-    setConflictData(null);
-  };
-
-  const forceUploadLocalData = async () => {
+  const restoreFromDrive = async () => {
     if (!googleToken) return;
+    
+    const confirmRestore = window.confirm(
+      'Hành động này sẽ tải bản sao lưu từ Google Drive và ghi đè lên toàn bộ dữ liệu hiện tại trên máy của bạn. Bạn có muốn tiếp tục?'
+    );
+    if (!confirmRestore) return;
+
     try {
       setSyncState('syncing');
       const file = await findDataFile(googleToken);
-      const localPackage = {
-        projects,
-        tasks: tasks,
-        members,
-        activities,
-        lastUpdated
-      };
-      if (file) {
-        await updateDataFile(googleToken, file.id, localPackage);
-      } else {
-        await createDataFile(googleToken, localPackage);
+      
+      if (!file) {
+        setSyncState('idle');
+        alert('Không tìm thấy bản sao lưu nào của Nexus PM trên Google Drive của bạn!');
+        return;
       }
+      
+      const remotePackage = await downloadDataFile(googleToken, file.id);
+      
+      if (remotePackage.projects) setProjects(remotePackage.projects);
+      if (remotePackage.tasks) setTasks(remotePackage.tasks);
+      if (remotePackage.members) setMembers(remotePackage.members);
+      if (remotePackage.activities) setActivities(remotePackage.activities);
+      if (remotePackage.lastUpdated) {
+        setLastUpdated(remotePackage.lastUpdated);
+        localStorage.setItem('nexus_last_updated', remotePackage.lastUpdated.toString());
+      }
+      
       setSyncState('success');
-      const nowStr = new Date().toLocaleTimeString();
+      const nowStr = new Date().toLocaleString('vi-VN');
       setLastSyncTime(nowStr);
       localStorage.setItem('nexus_last_sync_time', nowStr);
-      setConflictData(null);
+      alert('Đã khôi phục dữ liệu từ Google Drive thành công!');
     } catch (err) {
-      setSyncState('error');
-      alert('Lỗi tải dữ liệu lên: ' + err.message);
+      console.error(err);
+      if (err.message.includes('401') || err.message.includes('Authorization') || err.message.includes('token')) {
+        handleGoogleLogout();
+        alert('Phiên kết nối Google Drive đã hết hạn. Vui lòng kết nối lại.');
+      } else {
+        setSyncState('error');
+        alert('Lỗi khôi phục từ Google Drive: ' + err.message);
+      }
     }
   };
-
-  // Auto-sync in background
-  useEffect(() => {
-    if (!googleToken) return;
-    const delayDebounce = setTimeout(() => {
-      syncWithDrive(googleToken, false);
-    }, 4000);
-    return () => clearTimeout(delayDebounce);
-  }, [lastUpdated, googleToken]);
 
   useEffect(() => {
     localStorage.setItem('nexus_theme', theme);
@@ -737,9 +692,8 @@ export const ProjectProvider = ({ children }) => {
       setConflictData,
       handleGoogleLogin,
       handleGoogleLogout,
-      syncWithDrive,
-      applyRemoteData,
-      forceUploadLocalData,
+      backupToDrive,
+      restoreFromDrive,
       lastUpdated,
       setLastUpdated
     }}>

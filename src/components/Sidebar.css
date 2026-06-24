@@ -449,13 +449,13 @@
 }
 
 .drive-sync-panel {
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .drive-user-info {
@@ -463,7 +463,7 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-  flex: 1;
+  width: 100%;
 }
 
 .drive-avatar {
@@ -492,6 +492,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1; /* Pushes the logout button to the right */
 }
 
 .drive-user-name {
@@ -517,11 +518,6 @@
   color: var(--color-danger);
 }
 
-.drive-actions {
-  display: flex;
-  gap: 4px;
-}
-
 .drive-action-btn {
   background: transparent;
   border: none;
@@ -533,6 +529,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .drive-action-btn:hover {
@@ -544,6 +541,59 @@
   background-color: rgba(244, 63, 94, 0.1);
   color: var(--color-danger);
 }
+
+/* Manual Sync Buttons */
+.drive-manual-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.drive-manual-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drive-manual-btn.backup {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--color-primary);
+}
+
+.drive-manual-btn.backup:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.drive-manual-btn.restore {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #10b981;
+}
+
+.drive-manual-btn.restore:hover:not(:disabled) {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.drive-manual-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 
 /* Spinning Animation for Syncing Refresh icon */
 @keyframes spin {

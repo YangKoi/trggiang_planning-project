@@ -42,7 +42,8 @@ const Sidebar = () => {
     lastSyncTime,
     handleGoogleLogin,
     handleGoogleLogout,
-    syncWithDrive
+    backupToDrive,
+    restoreFromDrive
   } = useContext(ProjectContext);
 
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -296,27 +297,38 @@ const Sidebar = () => {
               <div className="drive-user-meta">
                 <span className="drive-user-name" title={googleProfile?.name}>{googleProfile?.name || 'Tài khoản Google'}</span>
                 <span className={`drive-sync-time ${syncState}`}>
-                  {syncState === 'syncing' ? 'Đang đồng bộ...' : 
+                  {syncState === 'syncing' ? 'Đang xử lý...' : 
                    syncState === 'error' ? 'Lỗi đồng bộ' : 
-                   lastSyncTime ? `Đã lưu: ${lastSyncTime}` : 'Đã kết nối'}
+                   lastSyncTime ? `Sao lưu: ${lastSyncTime.split(',')[1] || lastSyncTime}` : 'Đã kết nối'}
                 </span>
               </div>
-            </div>
-            <div className="drive-actions">
-              <button 
-                className={`drive-action-btn sync clickable ${syncState === 'syncing' ? 'spinning' : ''}`}
-                onClick={() => syncWithDrive(googleToken, false)}
-                title="Đồng bộ ngay"
-                disabled={syncState === 'syncing'}
-              >
-                <RefreshCw size={14} />
-              </button>
               <button 
                 className="drive-action-btn logout clickable"
                 onClick={handleGoogleLogout}
                 title="Đăng xuất Google Drive"
               >
-                <LogOut size={14} />
+                <LogOut size={13} />
+              </button>
+            </div>
+            
+            <div className="drive-manual-actions">
+              <button 
+                className="drive-manual-btn backup clickable"
+                onClick={backupToDrive}
+                disabled={syncState === 'syncing'}
+                title="Sao lưu toàn bộ dữ liệu hiện tại lên Google Drive"
+              >
+                <Upload size={14} />
+                <span>Sao lưu lên Drive</span>
+              </button>
+              <button 
+                className="drive-manual-btn restore clickable"
+                onClick={restoreFromDrive}
+                disabled={syncState === 'syncing'}
+                title="Tải bản sao lưu từ Google Drive về máy này"
+              >
+                <Download size={14} />
+                <span>Khôi phục về máy</span>
               </button>
             </div>
           </div>
