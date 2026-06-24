@@ -7,6 +7,43 @@ const FILE_NAME = 'nexus_pm_data.json';
 const BOUNDARY = 'NEXUS_PM_MULTIPART_BOUNDARY';
 
 /**
+ * Parses the error response from Google API to throw a descriptive user-friendly message
+ */
+async function handleErrorResponse(response, defaultMsg) {
+  let detail = '';
+  try {
+    const errData = await response.json();
+    detail = errData.error?.message || JSON.stringify(errData);
+  } catch (e) {
+    try {
+      detail = await response.text();
+    } catch (e2) {}
+  }
+
+  const detailLower = detail.toLowerCase();
+  
+  // Detect if Drive API is disabled on GCP project
+  if (detailLower.includes('api has not been used') || detailLower.includes('disabled')) {
+    return new Error(
+      `${defaultMsg}: Dịch vụ Google Drive API chưa được kích hoạt. Vui lòng vào Google Cloud Console tìm "Google Drive API" và chọn ENABLE.`
+    );
+  }
+  
+  // Detect if user logged in but forgot to check the permission checkbox
+  if (
+    response.status === 403 || 
+    detailLower.includes('permission') || 
+    detailLower.includes('insufficient')
+  ) {
+    return new Error(
+      `${defaultMsg}: Thiếu quyền truy cập Drive. Vui lòng Đăng xuất và Kết nối lại, nhớ TÍCH CHỌN ô cho phép ứng dụng truy cập tệp Google Drive.`
+    );
+  }
+
+  return new Error(`${defaultMsg} (${response.status}): ${detail || response.statusText}`);
+}
+
+/**
  * Fetch Google User Profile info using Access Token
  */
 export async function fetchUserProfile(accessToken) {
@@ -17,7 +54,7 @@ export async function fetchUserProfile(accessToken) {
   });
 
   if (!response.ok) {
-    throw new Error('Không thể lấy thông tin tài khoản Google');
+    throw await handleErrorResponse(response, 'Không thể lấy thông tin tài khoản Google');
   }
 
   return await response.json();
@@ -39,7 +76,7 @@ export async function findDataFile(accessToken) {
   );
 
   if (!response.ok) {
-    throw new Error('Lỗi tìm kiếm file trên Google Drive');
+    throw await handleErrorResponse(response, 'Lỗi tìm kiếm file trên Google Drive');
   }
 
   const result = await response.json();
@@ -63,7 +100,7 @@ export async function downloadDataFile(accessToken, fileId) {
   );
 
   if (!response.ok) {
-    throw new Error('Lỗi tải dữ liệu từ Google Drive');
+    throw await handleErrorResponse(response, 'Lỗi tải dữ liệu từ Google Drive');
   }
 
   return await response.json();
@@ -103,7 +140,7 @@ export async function createDataFile(accessToken, data) {
   );
 
   if (!response.ok) {
-    throw new Error('Lỗi tạo tệp đồng bộ mới trên Google Drive');
+    throw await handleErrorResponse(response, 'Lỗi tạo tệp đồng bộ mới trên Google Drive');
   }
 
   return await response.json();
@@ -126,7 +163,7 @@ export async function updateDataFile(accessToken, fileId, data) {
   );
 
   if (!response.ok) {
-    throw new Error('Lỗi ghi đè tệp đồng bộ trên Google Drive');
+    throw await handleErrorResponse(response, 'Lỗi ghi đè tệp đồng bộ trên Google Drive');
   }
 
   return await response.json();
