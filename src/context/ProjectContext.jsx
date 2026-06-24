@@ -317,8 +317,7 @@ export const ProjectProvider = ({ children }) => {
               const profile = await fetchUserProfile(tokenResponse.access_token);
               setGoogleProfile(profile);
               localStorage.setItem('nexus_google_profile', JSON.stringify(profile));
-              
-              await syncWithDrive(tokenResponse.access_token, true);
+              setSyncState('idle');
             } catch (err) {
               setSyncState('error');
               alert('Lỗi đăng nhập Google: ' + err.message);
